@@ -1,14 +1,44 @@
 import requests
-import json
+import os
 
-api_url = 'http://127.0.0.1:8000/api/'
+def create_article(title, content, banner_path, api_endpoint):
+    """
+    Create an article by sending title, content, and banner to the API endpoint.
 
-api_search = api_url + 'search/'
+    Args:
+        title (str): Title of the article.
+        content (str): Content of the article.
+        banner_path (str): Path to the banner image file.
+        api_endpoint (str): URL of the API endpoint.
 
-api_add = api_url + 'add/'
+    Returns:
+        requests.Response: Response object from the API.
+    """
+    # Prepare the data to be sent
+    data = {
+        'title': title,
+        'content': content
+    }
 
-api_control = api_url + 'control/'
+    # Get the directory of the current script
+    script_dir = os.path.dirname(os.path.abspath(__file__))
 
-response = requests.get(api_search, params={'search-value':'narinji'})
-print(response.status_code)
-print(response.json())
+    # Construct the path to the image file
+    image_path = os.path.join(script_dir, banner_path)
+
+    # Open and attach the banner image file
+    files = {'banner': open(image_path, 'rb')}
+
+    # Send the POST request
+    response = requests.put(api_endpoint, data=data, files=files)
+
+    return response
+
+# Example usage:
+title = 'Sample Title 3'
+content = 'Sample content of the article. 3'
+banner_path = 'image-3.jpg'
+api_endpoint = 'http://127.0.0.1:8000/api/update-article/3/'
+
+response = create_article(title, content, banner_path, api_endpoint)
+print(response.text)
